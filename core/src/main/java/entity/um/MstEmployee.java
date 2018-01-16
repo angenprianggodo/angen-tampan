@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import entity.BaseEntity;
 
 @Entity(name = "MstEmployee")
-@Table(name = "MST_EMPLOYEE")
+@Table(schema = "USER_MANAGEMENT", name = "MST_EMPLOYEE")
 public class MstEmployee extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = -2798072563424417206L;
