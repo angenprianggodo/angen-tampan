@@ -16,7 +16,6 @@ import services.um.MstEmployeeSvc;
 @Service(value = "mstEmployeeSvc")
 @Transactional
 public class MstEmployeeSvcImpl implements MstEmployeeSvc {
-
 	@Autowired
 	private MstEmployeeDao mstEmployeeDao;
 
@@ -30,6 +29,8 @@ public class MstEmployeeSvcImpl implements MstEmployeeSvc {
 			empl.setEmployeeName(obj.getEmployeeName());
 			empl.setPhone(obj.getPhone());
 			empl.setEmail(obj.getEmail());
+			
+			employees.add(empl);
 		}
 		return employees;
 	}
