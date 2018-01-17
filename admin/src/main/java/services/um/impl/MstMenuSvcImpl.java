@@ -1,7 +1,9 @@
 package services.um.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,7 +30,7 @@ public class MstMenuSvcImpl implements MstMenuSvc{
 	
 	@Override
 	public List<Menu> getMenuStructure(){
-		List<Menu> menu = new ArrayList<>();
+		List<Menu> menues = new ArrayList<>();
 //		List<MstMenu> mstMenu = (List<MstMenu>) mstMenuDao.getMenuStructure();
 //		for(MstMenu obj : mstMenu) {
 //			Menu mn = new Menu();
@@ -36,25 +38,64 @@ public class MstMenuSvcImpl implements MstMenuSvc{
 //			menu.add(mn);
 //		}
 		
+		String sqlRoot = "select xx.menu_code from user_management.mst_menu xx where xx.parent_code is null order by xx.seq";
+		Query queryRoot = em.createNativeQuery(sqlRoot);
+		List<Object[]> rootObjects = queryRoot.getResultList();
 		
-		
-		String sql = 
-				"with temp as  ( select menu_code, parent_code "
-				 + " from user_management.mst_menu "
-				 + " where type = 'dropdown' order by seq "
-				+ " )  select * from user_management.mst_menu a "
-				+ " left join temp b " 
-				+ " on a.parent_code = b.menu_code";
-		Query query = em.createNativeQuery(sql, MstMenu.class);
-		List<MstMenu> mstMenuList = query.getResultList();
-		for(MstMenu obj : mstMenuList) {
-			Menu mn = new Menu();
-			mn.setMenuCode(obj.getMenuCode());
-			mn.setParentCode(obj.getParentCode());
-			menu.add(mn);
+		for(Object[] objRoot : rootObjects) {
+			String parentCode = (String) objRoot[0];
+			
+			String sql = 
+					"WITH RECURSIVE q AS ( " + 
+					"            		 SELECT x.parent_code, x.menu_code, x.menu_name, x.seq, x.type, x.url, x.icon, 1 as lvl " + 
+					"                       FROM user_management.mst_menu x " + 
+					"                     WHERE x.flag_active = 'Y' " + 
+					"            		   and x.menu_code = '"+ parentCode +"'" + 
+					"                     UNION ALL " + 
+					"                     SELECT m.parent_code, m.menu_code, m.menu_name,  m.seq, m.type, m.url, m.icon, q.lvl + 1 " + 
+					"                       FROM user_management.mst_menu m " + 
+					"                     JOIN q ON q.menu_code = m.parent_code " + 
+					"                     WHERE m.flag_active = 'Y' ) " + 
+					"SELECT parent_code, menu_code, menu_name,  seq, type, url, icon, lvl FROM q order by lvl, seq";
+			
+			
+			Query query = em.createNativeQuery(sql);
+			List<Object[] >objects = query.getResultList();
+			
+			int maxLvl = (int) objects.get(objects.size()-1)[7];
+			
+			for(Object[] obj : objects) {
+				Menu menu = new Menu();
+				menu.setParentCode(obj[0] == null  ? null : (String) obj[0]);
+				menu.setMenuCode((String) obj[1]);
+				menu.setMenuName((String) obj[2]);
+				menu.setSequence((int) obj[3]);
+				menu.setType((String) obj[4]);
+				menu.setUrl((String) obj[5]);
+				menu.setIcon((String) obj[6]);
+				menu.setLvl((int) obj[7]);
+				
+				for(int i = 1; i <= maxLvl; i++) {
+					if(menu.getLvl() == i) {
+						menues.add(menu);
+					}
+				}
+				
+			}
 		}
 				
-		return menu;
+		return menues;
+	}
+	
+	private Menu getParentCode(String code, List<Menu> menuList) {
+		Menu m = null;
+//		for(m : menuList) {
+//			return m;
+//			if() {
+//				
+//			}
+//		}
+		return m;
 	}
 	
 }
