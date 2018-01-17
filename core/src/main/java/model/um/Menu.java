@@ -15,10 +15,25 @@ public class Menu extends BaseEntity implements Serializable {
 	private String parentCode;
 	private String type;
 	private String url;
-	private Integer sequence;
+	private int sequence;
 	private String icon;
-	private String flagActive;
-	private List<Menu> subMenu = new ArrayList<>();
+	private int lvl;
+	private List<Menu> submenu = new ArrayList<>();
+	
+	public Menu(){
+	}
+	
+	public Menu(Menu m){
+		this.menuCode = m.getMenuCode();
+		this.menuName = m.getMenuName();
+		this.parentCode = m.getParentCode();
+		this.type = m.getType();
+		this.url = m .getUrl();
+		this.sequence = m.getSequence();
+		this.icon = m.getIcon();
+		this.lvl = m.getLvl();
+		this.submenu = m.getSubmenu();
+	}
 
 	public String getMenuCode() {
 		return menuCode;
@@ -60,11 +75,11 @@ public class Menu extends BaseEntity implements Serializable {
 		this.url = url;
 	}
 
-	public Integer getSequence() {
+	public int getSequence() {
 		return sequence;
 	}
 
-	public void setSequence(Integer sequence) {
+	public void setSequence(int sequence) {
 		this.sequence = sequence;
 	}
 
@@ -76,20 +91,20 @@ public class Menu extends BaseEntity implements Serializable {
 		this.icon = icon;
 	}
 
-	public String getFlagActive() {
-		return flagActive;
+	public int getLvl() {
+		return lvl;
 	}
 
-	public void setFlagActive(String flagActive) {
-		this.flagActive = flagActive;
+	public void setLvl(int lvl) {
+		this.lvl = lvl;
 	}
 
-	public List<Menu> getSubMenu() {
-		return subMenu;
+	public List<Menu> getSubmenu() {
+		return submenu;
 	}
 
-	public void setSubMenu(List<Menu> subMenu) {
-		this.subMenu = subMenu;
+	public void setSubmenu(List<Menu> submenu) {
+		this.submenu = submenu;
 	}
 
 }
